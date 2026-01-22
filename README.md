@@ -1,6 +1,8 @@
-# 🎯 Personal Task & Progress Board Website
+<img width="1898" height="1065" alt="image" src="https://github.com/user-attachments/assets/a7abde4c-fce9-4a2c-98be-7b13c5f7164c" /># 🎯 Personal Task & Progress Board Website
 
 A personal website for tracking tasks and learning progress in a fun and visual way ✨
+
+<img width="1912" height="1065" alt="image" src="https://github.com/user-attachments/assets/944ae2c3-9f1c-46a5-8d13-8b68efac9d53" />
 
 ---
 
@@ -27,6 +29,9 @@ The website works like a **personal achievement board**, showing:
 ---
 
 ### 📊 Progress Tracking
+
+<img width="1919" height="1070" alt="image" src="https://github.com/user-attachments/assets/7d57ae3b-031e-4911-87ac-264fa7098583" />
+
 - 📈 Visual progress for each task
 - 🔢 Progress shown as percentage or progress bar
 - ✏️ Progress can be updated manually
@@ -34,7 +39,7 @@ The website works like a **personal achievement board**, showing:
   - ⏸️ Not started
   - 🔄 In progress
   - ✔️ Completed
- 
+
   ---
 
 ### 🧱 Board Layout
@@ -45,6 +50,9 @@ The website works like a **personal achievement board**, showing:
 ---
 
 ### 🏆 Achievement System
+
+<img width="1898" height="1065" alt="image" src="https://github.com/user-attachments/assets/71bab41a-681b-4996-a697-071728abae71" />
+
 - 🎉 Achievements unlock when a task reaches 100%
 - 🏅 Each achievement:
   - 🏷️ Uses the task name
@@ -56,6 +64,9 @@ The website works like a **personal achievement board**, showing:
 ---
 
 ### 🖼️ Icons
+
+<img width="1136" height="912" alt="image" src="https://github.com/user-attachments/assets/642470c7-7656-4859-9102-13a4443efcb3" />
+
 - 🎨 Built-in icon selection for achievements
 - ⬆️ Ability to upload a custom icon for an achievement
 - 🔒 Uploaded icons are used only for that achievement
@@ -86,3 +97,14 @@ First release focuses on core features ⚙️
 
 ## 📄 License
 Not specified yet
+
+---
+
+## 🙌 Inspiration
+
+Inspired by:
+- Game achievement systems
+- Visual progress boards
+- The idea that tracking progress should feel rewarding, not exhausting
+
+---
