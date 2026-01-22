@@ -1,4 +1,4 @@
-<img width="1898" height="1065" alt="image" src="https://github.com/user-attachments/assets/a7abde4c-fce9-4a2c-98be-7b13c5f7164c" /># 🎯 Personal Task & Progress Board Website
+# 🎯 Personal Task & Progress Board Website
 
 A personal website for tracking tasks and learning progress in a fun and visual way ✨
 
@@ -40,7 +40,7 @@ The website works like a **personal achievement board**, showing:
   - 🔄 In progress
   - ✔️ Completed
 
-  ---
+---
 
 ### 🧱 Board Layout
 - 🧠 Board-style visual layout
