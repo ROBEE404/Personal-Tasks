@@ -24,6 +24,8 @@ The website works like a **personal achievement board**, showing:
 - 🎯 Each task represents one clear goal
 - 🚫 No notes or long text, only tasks
 
+---
+
 ### 📊 Progress Tracking
 - 📈 Visual progress for each task
 - 🔢 Progress shown as percentage or progress bar
@@ -32,11 +34,15 @@ The website works like a **personal achievement board**, showing:
   - ⏸️ Not started
   - 🔄 In progress
   - ✔️ Completed
+ 
+  ---
 
 ### 🧱 Board Layout
 - 🧠 Board-style visual layout
 - 👀 Easy to see active, completed, and pending tasks
 - 🚫 Not a traditional table or list
+
+---
 
 ### 🏆 Achievement System
 - 🎉 Achievements unlock when a task reaches 100%
@@ -47,11 +53,15 @@ The website works like a **personal achievement board**, showing:
 - ➡️ Achievement pop-up slides in and disappears smoothly
 - 🎮 Inspired by game achievements
 
+---
+
 ### 🖼️ Icons
 - 🎨 Built-in icon selection for achievements
 - ⬆️ Ability to upload a custom icon for an achievement
 - 🔒 Uploaded icons are used only for that achievement
 - 🧰 Built-in icons remain unchanged
+
+---
 
 ### 💾 Saving
 - 💾 Tasks, progress, and achievements are saved
