@@ -2,7 +2,7 @@
 
 A personal website for tracking tasks and learning progress in a fun and visual way ✨
 
-<img width="1912" height="1065" alt="image" src="https://github.com/user-attachments/assets/944ae2c3-9f1c-46a5-8d13-8b68efac9d53" />
+<img width="1917" height="1064" alt="image" src="https://github.com/user-attachments/assets/79e7aa57-8ffb-44f9-b7dc-a6e4f506cb55" />
 
 ---
 
@@ -30,7 +30,7 @@ The website works like a **personal achievement board**, showing:
 
 ### 📊 Progress Tracking
 
-<img width="1919" height="1070" alt="image" src="https://github.com/user-attachments/assets/7d57ae3b-031e-4911-87ac-264fa7098583" />
+<img width="1614" height="938" alt="image" src="https://github.com/user-attachments/assets/59374b71-c643-46f5-bce6-81083778ddb5" />
 
 - 📈 Visual progress for each task
 - 🔢 Progress shown as percentage or progress bar
