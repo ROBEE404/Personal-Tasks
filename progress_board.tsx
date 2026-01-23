@@ -184,10 +184,10 @@ const AchievementCard = ({ achievement, onUpdate, onDelete, compact = false, sho
                 </label>
               </div>
             </div>
-            <div className="flex gap-2">
+            <div className="flex flex-wrap gap-2">
               <button
                 onClick={handleSave}
-                className="flex-1 bg-gradient-to-r from-green-500 to-emerald-600 text-white px-3 py-2 md:px-4 md:py-2 rounded-lg font-bold hover:from-green-600 hover:to-emerald-700 transition-all text-sm md:text-base flex items-center justify-center gap-1"
+                className="flex-1 min-w-[100px] bg-gradient-to-r from-green-500 to-emerald-600 text-white px-3 py-2 md:px-4 md:py-2 rounded-lg font-bold hover:from-green-600 hover:to-emerald-700 transition-all text-sm md:text-base flex items-center justify-center gap-1"
               >
                 <Check className="w-4 h-4" />
                 Save
@@ -195,7 +195,7 @@ const AchievementCard = ({ achievement, onUpdate, onDelete, compact = false, sho
               {showDelete && (
                 <button
                   onClick={handleDelete}
-                  className="bg-red-500 text-white px-3 py-2 md:px-4 md:py-2 rounded-lg font-bold hover:bg-red-600 transition-all text-sm md:text-base"
+                  className="flex-1 min-w-[100px] bg-red-500 text-white px-3 py-2 md:px-4 md:py-2 rounded-lg font-bold hover:bg-red-600 transition-all text-sm md:text-base"
                   title="Delete Achievement"
                 >
                   Delete
@@ -203,7 +203,7 @@ const AchievementCard = ({ achievement, onUpdate, onDelete, compact = false, sho
               )}
               <button
                 onClick={() => setIsEditing(false)}
-                className="flex-1 bg-gray-700 text-white px-3 py-2 md:px-4 md:py-2 rounded-lg font-bold hover:bg-gray-600 transition-all text-sm md:text-base flex items-center justify-center gap-1"
+                className="flex-1 min-w-[100px] bg-gray-700 text-white px-3 py-2 md:px-4 md:py-2 rounded-lg font-bold hover:bg-gray-600 transition-all text-sm md:text-base flex items-center justify-center gap-1"
               >
                 <X className="w-4 h-4" />
                 Cancel
