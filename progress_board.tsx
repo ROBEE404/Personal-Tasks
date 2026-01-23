@@ -242,7 +242,7 @@ const AchievementCard = ({ achievement, onUpdate, onDelete, compact = false, sho
   );
 };
 
-const TaskCard = ({ task, onUpdate, onDelete }) => {
+const TaskCard = ({ task, onUpdate, onDelete, compact = false, showEditButton = false }) => {
   const [isEditing, setIsEditing] = useState(false);
   const [editName, setEditName] = useState(task.name);
   const [editProgress, setEditProgress] = useState(task.progress);
@@ -261,16 +261,116 @@ const TaskCard = ({ task, onUpdate, onDelete }) => {
 
   const handleSave = () => {
     if (editName.trim()) {
-      const wasComplete = task.progress === 100;
-      const isNowComplete = editProgress === 100;
       onUpdate(task.id, { name: editName, progress: editProgress });
       setIsEditing(false);
     }
   };
 
+  if (compact) {
+    return (
+      <div className={`bg-gradient-to-br ${getStatusColor()} p-0.5 rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105`}>
+        <div className="bg-gray-800 rounded-lg p-3 h-full relative">
+          {!isEditing && showEditButton && (
+            <button
+              onClick={() => setIsEditing(true)}
+              className="absolute top-2 right-2 bg-gray-700 hover:bg-gray-600 text-white p-1.5 rounded transition-all z-10"
+              title="Edit"
+            >
+              <Edit2 className="w-3 h-3" />
+            </button>
+          )}
+          {isEditing ? (
+            <div className="space-y-2">
+              <input
+                type="text"
+                value={editName}
+                onChange={(e) => setEditName(e.target.value)}
+                className="w-full bg-gray-700 text-white px-2 py-1 rounded border-2 border-purple-500 focus:outline-none focus:border-pink-500 text-sm"
+                placeholder="Task name"
+              />
+              <div>
+                <div className="flex justify-between items-center mb-1">
+                  <label className="text-white font-semibold text-xs">Progress</label>
+                  <span className="text-lg font-bold text-purple-400">{editProgress}%</span>
+                </div>
+                <input
+                  type="range"
+                  min="0"
+                  max="100"
+                  step="5"
+                  value={editProgress}
+                  onChange={(e) => setEditProgress(parseInt(e.target.value))}
+                  className="w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer slider"
+                />
+              </div>
+              <div className="flex gap-1">
+                <button
+                  onClick={handleSave}
+                  className="flex-1 bg-gradient-to-r from-green-500 to-emerald-600 text-white px-2 py-1 rounded font-bold hover:from-green-600 hover:to-emerald-700 transition-all text-xs"
+                >
+                  Save
+                </button>
+                <button
+                  onClick={() => onDelete(task.id)}
+                  className="bg-red-500 text-white px-2 py-1 rounded font-bold hover:bg-red-600 transition-all text-xs"
+                >
+                  Delete
+                </button>
+                <button
+                  onClick={() => setIsEditing(false)}
+                  className="flex-1 bg-gray-700 text-white px-2 py-1 rounded font-bold hover:bg-gray-600 transition-all text-xs"
+                >
+                  Cancel
+                </button>
+              </div>
+            </div>
+          ) : (
+            <>
+              <div className="flex items-start justify-between mb-2">
+                <div className="flex items-center gap-1 min-w-0 pr-8">
+                  <Zap className="w-4 h-4 text-purple-400 flex-shrink-0" />
+                  <h3 className="text-white font-bold text-sm truncate">{task.name}</h3>
+                </div>
+              </div>
+
+              <div className="flex items-center gap-1 text-gray-400 text-xs mb-2">
+                <Clock className="w-3 h-3 flex-shrink-0" />
+                <span>{getTimeAgo(task.updatedAt || task.createdAt)}</span>
+              </div>
+
+              <div className="mb-2">
+                <div className="flex justify-between items-center mb-1">
+                  <span className="text-gray-300 text-xs font-semibold">{getStatusText()}</span>
+                  <span className="text-xl font-bold text-white">{task.progress}%</span>
+                </div>
+                <div className="w-full bg-gray-700 rounded-full h-2 overflow-hidden">
+                  <div
+                    className={`h-full bg-gradient-to-r ${getStatusColor()} transition-all duration-500 rounded-full relative overflow-hidden`}
+                    style={{ width: `${task.progress}%` }}
+                  >
+                    <div className="absolute inset-0 bg-white opacity-20 animate-pulse" />
+                  </div>
+                </div>
+              </div>
+            </>
+          )}
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className={`bg-gradient-to-br ${getStatusColor()} p-1 rounded-xl shadow-lg hover:shadow-2xl transition-all duration-300 hover:scale-105`}>
-      <div className="bg-gray-800 rounded-lg p-4 md:p-6 h-full">
+      <div className="bg-gray-800 rounded-lg p-4 md:p-6 h-full relative">
+        {!isEditing && showEditButton && (
+          <button
+            onClick={() => setIsEditing(true)}
+            className="absolute top-3 right-3 md:top-4 md:right-4 bg-gray-700 hover:bg-gray-600 text-white p-2 rounded-lg transition-all z-10"
+            title="Edit"
+          >
+            <Edit2 className="w-4 h-4 md:w-5 md:h-5" />
+          </button>
+        )}
         {isEditing ? (
           <div className="space-y-3 md:space-y-4">
             <input
@@ -303,6 +403,12 @@ const TaskCard = ({ task, onUpdate, onDelete }) => {
                 Save
               </button>
               <button
+                onClick={() => onDelete(task.id)}
+                className="bg-red-500 text-white px-3 py-2 md:px-4 md:py-2 rounded-lg font-bold hover:bg-red-600 transition-all text-sm md:text-base"
+              >
+                Delete
+              </button>
+              <button
                 onClick={() => setIsEditing(false)}
                 className="flex-1 bg-gray-700 text-white px-3 py-2 md:px-4 md:py-2 rounded-lg font-bold hover:bg-gray-600 transition-all text-sm md:text-base"
               >
@@ -313,7 +419,7 @@ const TaskCard = ({ task, onUpdate, onDelete }) => {
         ) : (
           <>
             <div className="flex items-start justify-between mb-3 md:mb-4">
-              <div className="flex items-center gap-2 min-w-0">
+              <div className="flex items-center gap-2 min-w-0 pr-10">
                 {task.progress === 100 ? (
                   <Trophy className="w-5 h-5 md:w-6 md:h-6 text-yellow-400 flex-shrink-0" />
                 ) : task.progress > 0 ? (
@@ -343,21 +449,6 @@ const TaskCard = ({ task, onUpdate, onDelete }) => {
                   <div className="absolute inset-0 bg-white opacity-20 animate-pulse" />
                 </div>
               </div>
-            </div>
-
-            <div className="flex gap-2 mt-3 md:mt-4">
-              <button
-                onClick={() => setIsEditing(true)}
-                className="flex-1 bg-gradient-to-r from-purple-500 to-pink-500 text-white px-3 py-2 md:px-4 md:py-2 rounded-lg font-bold hover:from-purple-600 hover:to-pink-600 transition-all text-sm md:text-base"
-              >
-                Update
-              </button>
-              <button
-                onClick={() => onDelete(task.id)}
-                className="bg-red-500 text-white px-3 py-2 md:px-4 md:py-2 rounded-lg font-bold hover:bg-red-600 transition-all text-sm md:text-base"
-              >
-                Delete
-              </button>
             </div>
           </>
         )}
@@ -510,7 +601,7 @@ export default function ProgressBoard() {
           <p className="text-gray-300 text-base md:text-xl">Track your goals, unlock achievements, level up! 🚀</p>
         </div>
 
-        <div className="flex justify-center gap-2 md:gap-4 mb-6 md:mb-8">
+        <div className="flex justify-center gap-2 md:gap-4 mb-6 md:mb-8 flex-wrap">
           <button
             onClick={() => setCurrentPage('board')}
             className={`px-4 md:px-8 py-2 md:py-3 rounded-full font-bold text-sm md:text-base transition-all ${
@@ -602,6 +693,7 @@ export default function ProgressBoard() {
                       task={task}
                       onUpdate={updateTask}
                       onDelete={deleteTask}
+                      showEditButton={true}
                     />
                   ))}
                   {notStarted.length === 0 && (
@@ -623,6 +715,7 @@ export default function ProgressBoard() {
                       task={task}
                       onUpdate={updateTask}
                       onDelete={deleteTask}
+                      showEditButton={true}
                     />
                   ))}
                   {recentInProgress.length === 0 && (
@@ -702,6 +795,7 @@ export default function ProgressBoard() {
                     onUpdate={updateTask}
                     onDelete={deleteTask}
                     compact={true}
+                    showEditButton={true}
                   />
                 ))}
               </div>
