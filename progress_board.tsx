@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Plus, Trophy, Zap, Target, Award, Star, Flame, Crown, Gem, Rocket, Heart, Sparkles, Clock, Edit2, Check, X } from 'lucide-react';
+import { Plus, Trophy, Zap, Target, Award, Star, Flame, Crown, Gem, Rocket, Heart, Sparkles, Clock, Edit2, Check, X, LogIn, User } from 'lucide-react';
 
 const iconOptions = [
   { name: 'Trophy', component: Trophy },
@@ -59,7 +59,7 @@ const AchievementToast = ({ task, onClose }) => {
   );
 };
 
-const AchievementCard = ({ achievement, onUpdate, onDelete, compact = false, showDelete = false }) => {
+const AchievementCard = ({ achievement, onUpdate, onDelete, compact = false, showDelete = false, isVisitorMode = false }) => {
   const [isEditing, setIsEditing] = useState(false);
   const [editName, setEditName] = useState(achievement.achievementName || achievement.name);
   const [editTitle, setEditTitle] = useState(achievement.achievementTitle || 'Master');
@@ -69,6 +69,7 @@ const AchievementCard = ({ achievement, onUpdate, onDelete, compact = false, sho
   const IconComponent = iconOptions.find(i => i.name === selectedIcon)?.component || Trophy;
 
   const handleImageUpload = (e) => {
+    if (isVisitorMode) return;
     const file = e.target.files[0];
     if (file && file.type.startsWith('image/')) {
       const reader = new FileReader();
@@ -81,6 +82,7 @@ const AchievementCard = ({ achievement, onUpdate, onDelete, compact = false, sho
   };
 
   const handleSave = () => {
+    if (isVisitorMode) return;
     onUpdate(achievement.id, {
       achievementName: editName,
       achievementTitle: editTitle,
@@ -91,6 +93,7 @@ const AchievementCard = ({ achievement, onUpdate, onDelete, compact = false, sho
   };
 
   const handleDelete = () => {
+    if (isVisitorMode) return;
     if (window.confirm(`Are you sure you want to delete the achievement "${editName}"? This cannot be undone.`)) {
       onDelete(achievement.id);
       setIsEditing(false);
@@ -231,9 +234,11 @@ const AchievementCard = ({ achievement, onUpdate, onDelete, compact = false, sho
             <button
               onClick={() => setIsEditing(true)}
               className="w-full bg-gradient-to-r from-yellow-500 to-orange-500 text-gray-900 px-3 py-2 md:px-4 md:py-2 rounded-lg font-bold hover:from-yellow-600 hover:to-orange-600 transition-all text-sm md:text-base flex items-center justify-center gap-2"
+              disabled={isVisitorMode}
+              style={{ opacity: isVisitorMode ? 0.5 : 1, cursor: isVisitorMode ? 'not-allowed' : 'pointer' }}
             >
               <Edit2 className="w-4 h-4" />
-              Customize
+              {isVisitorMode ? 'View Only' : 'Customize'}
             </button>
           </>
         )}
@@ -463,10 +468,99 @@ export default function ProgressBoard() {
   const [newTaskName, setNewTaskName] = useState('');
   const [achievement, setAchievement] = useState(null);
   const [currentPage, setCurrentPage] = useState('board');
+  const [showWelcomePopup, setShowWelcomePopup] = useState(true);
+  const [showLoginPopup, setShowLoginPopup] = useState(false);
+  const [isVisitorMode, setIsVisitorMode] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
+  const [visitorCount, setVisitorCount] = useState(0);
 
   useEffect(() => {
     loadTasks();
+    loadVisitorCount();
+    checkUserSession();
   }, []);
+
+  const loadVisitorCount = async () => {
+    try {
+      const result = await window.storage.get('visitor_count', true);
+      const count = result ? parseInt(result.value) : 0;
+      setVisitorCount(count);
+    } catch (error) {
+      setVisitorCount(0);
+    }
+  };
+
+  const checkUserSession = () => {
+    const hasVisited = localStorage.getItem('hasVisited');
+    const userSession = localStorage.getItem('userSession');
+    
+    if (userSession === 'ROBEE') {
+      setIsLoggedIn(true);
+      setIsVisitorMode(false);
+      setShowWelcomePopup(false);
+    } else if (hasVisited) {
+      setShowWelcomePopup(false);
+      setIsVisitorMode(true);
+    }
+  };
+
+  const incrementVisitorCount = async () => {
+    const hasVisited = localStorage.getItem('hasVisited');
+    if (!hasVisited) {
+      try {
+        const result = await window.storage.get('visitor_count', true);
+        const count = result ? parseInt(result.value) : 0;
+        const newCount = count + 1;
+        await window.storage.set('visitor_count', newCount.toString(), true);
+        setVisitorCount(newCount);
+        localStorage.setItem('hasVisited', 'true');
+      } catch (error) {
+        console.log('Error incrementing visitor count');
+      }
+    }
+  };
+
+  const handleVisitorMode = () => {
+    setIsVisitorMode(true);
+    setIsLoggedIn(false);
+    setShowWelcomePopup(false);
+    localStorage.removeItem('userSession');
+    incrementVisitorCount();
+  };
+
+  const handleShowLogin = () => {
+    setShowWelcomePopup(false);
+    setShowLoginPopup(true);
+  };
+
+  const handleShowLoginFromIcon = () => {
+    if (isLoggedIn) {
+      setShowWelcomePopup(true);
+    } else {
+      setShowLoginPopup(true);
+    }
+  };
+
+  const handleLogin = () => {
+    if (username === 'ROBEE' && password === '404ROBEE404') {
+      setIsLoggedIn(true);
+      setIsVisitorMode(false);
+      setShowLoginPopup(false);
+      localStorage.setItem('userSession', username);
+      incrementVisitorCount();
+    } else {
+      alert('Invalid username or password. Please try again.');
+    }
+  };
+
+  const handleBackToWelcome = () => {
+    setShowLoginPopup(false);
+    setShowWelcomePopup(true);
+    setUsername('');
+    setPassword('');
+  };
 
   const loadTasks = async () => {
     try {
@@ -493,6 +587,7 @@ export default function ProgressBoard() {
   };
 
   const addTask = async () => {
+    if (isVisitorMode) return;
     if (newTaskName.trim()) {
       const newTask = {
         id: Date.now().toString(),
@@ -510,6 +605,7 @@ export default function ProgressBoard() {
   };
 
   const updateTask = async (id, updates) => {
+    if (isVisitorMode) return;
     const updatedTasks = tasks.map(task =>
       task.id === id ? { ...task, ...updates, updatedAt: new Date().toISOString() } : task
     );
@@ -536,6 +632,7 @@ export default function ProgressBoard() {
   };
 
   const deleteTask = async (id) => {
+    if (isVisitorMode) return;
     const updatedTasks = tasks.filter(task => task.id !== id);
     setTasks(updatedTasks);
     await window.storage.delete(`task:${id}`);
@@ -583,8 +680,183 @@ export default function ProgressBoard() {
               height: 24px;
             }
           }
+          .pixel-border {
+            box-shadow: 
+              0 -2px 0 0 #fff,
+              2px 0 0 0 #fff,
+              0 2px 0 0 #000,
+              -2px 0 0 0 #000,
+              inset 0 -2px 0 0 #808080,
+              inset 2px 0 0 0 #fff,
+              inset 0 2px 0 0 #fff,
+              inset -2px 0 0 0 #808080;
+          }
+          .pixel-button {
+            box-shadow: 
+              0 -1px 0 0 #fff,
+              1px 0 0 0 #fff,
+              0 1px 0 0 #000,
+              -1px 0 0 0 #000;
+          }
+          .pixel-button:active {
+            box-shadow: 
+              0 -1px 0 0 #000,
+              1px 0 0 0 #000,
+              0 1px 0 0 #fff,
+              -1px 0 0 0 #fff;
+          }
+          .popup-header {
+            background: linear-gradient(to bottom, #b8d4f1, #a0c3e8);
+          }
+          .popup-body {
+            background: linear-gradient(to bottom, #d4e4f7, #c5d9f0);
+          }
         `}
       </style>
+
+      {/* Visitor Counter */}
+      <div className="fixed top-4 left-4 z-40 bg-gray-800 pixel-border px-4 py-2 rounded">
+        <div className="flex items-center gap-2">
+          <span className="text-gray-400 text-xs font-mono">VISITORS</span>
+          <span className="text-yellow-400 font-bold font-mono">{visitorCount}</span>
+        </div>
+      </div>
+
+      {/* Login Icon - Top Right - Always Visible */}
+      <button
+        onClick={handleShowLoginFromIcon}
+        className={`fixed top-4 right-4 z-40 text-white p-3 rounded-full pixel-button transition-all shadow-lg hover:scale-110 ${
+          isLoggedIn 
+            ? 'bg-gradient-to-br from-green-500 via-emerald-500 to-teal-600 hover:from-green-600 hover:via-emerald-600 hover:to-teal-700' 
+            : 'bg-gradient-to-br from-purple-500 via-pink-500 to-red-500 hover:from-purple-600 hover:via-pink-600 hover:to-red-600'
+        }`}
+        style={{ boxShadow: '0 4px 15px rgba(0, 0, 0, 0.3)' }}
+        title={isLoggedIn ? 'User Menu' : 'Login'}
+      >
+        {isLoggedIn ? <User className="w-5 h-5" /> : <LogIn className="w-5 h-5" />}
+      </button>
+
+      {/* Welcome Popup */}
+      {showWelcomePopup && (
+        <div className="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50 p-4">
+          <div className="pixel-border rounded-lg max-w-md w-full overflow-hidden shadow-2xl">
+            {/* MacOS Window Controls */}
+            <div className="popup-header px-3 py-2 flex items-center gap-2 border-b-2 border-blue-400">
+              <div className="flex gap-1.5">
+                <div className="w-3 h-3 rounded-full bg-red-500 pixel-button cursor-not-allowed"></div>
+                <div className="w-3 h-3 rounded-full bg-yellow-500 pixel-button cursor-not-allowed"></div>
+                <div className="w-3 h-3 rounded-full bg-green-500 pixel-button cursor-not-allowed"></div>
+              </div>
+              <div className="flex-1 text-center text-sm font-bold text-gray-800">
+                {isLoggedIn ? 'User Menu' : 'Achievement Board'}
+              </div>
+            </div>
+            
+            {/* Content */}
+            <div className="p-8 text-center popup-body">
+              <div className="text-4xl mb-4">{isLoggedIn ? '👤' : '🎯'}</div>
+              <h2 className="text-2xl font-bold text-gray-800 mb-2">
+                {isLoggedIn ? 'Welcome, ROBEE!' : 'Welcome!'}
+              </h2>
+              <p className="text-gray-700 mb-6">
+                {isLoggedIn ? 'Choose your mode' : 'Choose how you\'d like to continue'}
+              </p>
+              
+              <div className="space-y-3">
+                {!isLoggedIn && (
+                  <button
+                    onClick={handleShowLogin}
+                    className="w-full bg-gradient-to-b from-blue-500 to-blue-600 text-white px-6 py-3 rounded pixel-button font-bold hover:from-blue-600 hover:to-blue-700 transition-all shadow-md"
+                  >
+                    🔐 Login
+                  </button>
+                )}
+                <button
+                  onClick={handleVisitorMode}
+                  className="w-full bg-gradient-to-b from-gray-500 to-gray-600 text-white px-6 py-3 rounded pixel-button font-bold hover:from-gray-600 hover:to-gray-700 transition-all shadow-md"
+                >
+                  👁️ {isLoggedIn ? 'Switch to Visitor Mode' : 'Visitor Mode'}
+                </button>
+                {isLoggedIn && (
+                  <button
+                    onClick={() => setShowWelcomePopup(false)}
+                    className="w-full bg-gradient-to-b from-green-500 to-green-600 text-white px-6 py-3 rounded pixel-button font-bold hover:from-green-600 hover:to-green-700 transition-all shadow-md"
+                  >
+                    ✓ Continue as ROBEE
+                  </button>
+                )}
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Login Popup */}
+      {showLoginPopup && (
+        <div className="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50 p-4">
+          <div className="pixel-border rounded-lg max-w-md w-full overflow-hidden shadow-2xl">
+            {/* MacOS Window Controls */}
+            <div className="popup-header px-3 py-2 flex items-center gap-2 border-b-2 border-blue-400">
+              <div className="flex gap-1.5">
+                <div className="w-3 h-3 rounded-full bg-red-500 pixel-button cursor-not-allowed"></div>
+                <div className="w-3 h-3 rounded-full bg-yellow-500 pixel-button cursor-not-allowed"></div>
+                <div className="w-3 h-3 rounded-full bg-green-500 pixel-button cursor-not-allowed"></div>
+              </div>
+              <div className="flex-1 text-center text-sm font-bold text-gray-800">Login</div>
+            </div>
+            
+            {/* Content */}
+            <div className="p-8 popup-body">
+              <div className="text-center mb-6">
+                <div className="text-4xl mb-2">🔑</div>
+                <h2 className="text-2xl font-bold text-gray-800">User Login</h2>
+              </div>
+              
+              <div className="space-y-4">
+                <div>
+                  <label className="block text-sm font-bold text-gray-800 mb-2">Username</label>
+                  <input
+                    type="text"
+                    value={username}
+                    onChange={(e) => setUsername(e.target.value)}
+                    onKeyPress={(e) => e.key === 'Enter' && handleLogin()}
+                    className="w-full px-4 py-2 bg-white border-2 border-blue-300 rounded pixel-border focus:outline-none focus:border-blue-500"
+                    placeholder="Enter username"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-bold text-gray-800 mb-2">Password</label>
+                  <input
+                    type="password"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    onKeyPress={(e) => e.key === 'Enter' && handleLogin()}
+                    className="w-full px-4 py-2 bg-white border-2 border-blue-300 rounded pixel-border focus:outline-none focus:border-blue-500"
+                    placeholder="Enter password"
+                  />
+                </div>
+                
+                <div className="flex gap-3 pt-2">
+                  {showWelcomePopup === false && (
+                    <button
+                      onClick={handleBackToWelcome}
+                      className="flex-1 bg-gradient-to-b from-gray-400 to-gray-500 text-white px-6 py-3 rounded pixel-button font-bold hover:from-gray-500 hover:to-gray-600 transition-all shadow-md"
+                    >
+                      ← Back
+                    </button>
+                  )}
+                  <button
+                    onClick={handleLogin}
+                    className="flex-1 bg-gradient-to-b from-green-500 to-green-600 text-white px-6 py-3 rounded pixel-button font-bold hover:from-green-600 hover:to-green-700 transition-all shadow-md"
+                  >
+                    Login →
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
 
       {achievement && (
         <AchievementToast
@@ -640,13 +912,15 @@ export default function ProgressBoard() {
           <>
             <div className="flex justify-center mb-8 md:mb-12">
               {!showAddForm ? (
-                <button
-                  onClick={() => setShowAddForm(true)}
-                  className="bg-gradient-to-r from-purple-500 via-pink-500 to-red-500 text-white px-6 md:px-8 py-3 md:py-4 rounded-full font-bold text-base md:text-lg flex items-center gap-2 md:gap-3 hover:scale-110 transition-transform shadow-lg hover:shadow-2xl"
-                >
-                  <Plus className="w-5 h-5 md:w-6 md:h-6" />
-                  Add New Goal
-                </button>
+                !isVisitorMode && (
+                  <button
+                    onClick={() => setShowAddForm(true)}
+                    className="bg-gradient-to-r from-purple-500 via-pink-500 to-red-500 text-white px-6 md:px-8 py-3 md:py-4 rounded-full font-bold text-base md:text-lg flex items-center gap-2 md:gap-3 hover:scale-110 transition-transform shadow-lg hover:shadow-2xl"
+                  >
+                    <Plus className="w-5 h-5 md:w-6 md:h-6" />
+                    Add New Goal
+                  </button>
+                )
               ) : (
                 <div className="bg-gray-800 p-4 md:p-6 rounded-2xl shadow-2xl w-full max-w-md">
                   <input
@@ -693,7 +967,7 @@ export default function ProgressBoard() {
                       task={task}
                       onUpdate={updateTask}
                       onDelete={deleteTask}
-                      showEditButton={true}
+                      showEditButton={!isVisitorMode}
                     />
                   ))}
                   {notStarted.length === 0 && (
@@ -715,7 +989,7 @@ export default function ProgressBoard() {
                       task={task}
                       onUpdate={updateTask}
                       onDelete={deleteTask}
-                      showEditButton={true}
+                      showEditButton={!isVisitorMode}
                     />
                   ))}
                   {recentInProgress.length === 0 && (
@@ -747,6 +1021,7 @@ export default function ProgressBoard() {
                       onDelete={deleteTask}
                       compact={true}
                       showDelete={false}
+                      isVisitorMode={isVisitorMode}
                     />
                   ))}
                   {recentCompleted.length === 0 && (
@@ -795,7 +1070,7 @@ export default function ProgressBoard() {
                     onUpdate={updateTask}
                     onDelete={deleteTask}
                     compact={true}
-                    showEditButton={true}
+                    showEditButton={!isVisitorMode}
                   />
                 ))}
               </div>
@@ -825,6 +1100,7 @@ export default function ProgressBoard() {
                     onUpdate={updateTask}
                     onDelete={deleteTask}
                     showDelete={true}
+                    isVisitorMode={isVisitorMode}
                   />
                 ))}
               </div>
