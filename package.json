@@ -4,10 +4,12 @@
   "description": "",
   "type": "module",
   "main": "progress_board.tsx",
-  "scripts": {
-    "dev": "node \"node_modules/vite/bin/vite.js\"",
-    "build": "tsc && node \"node_modules/vite/bin/vite.js\" build",
-    "preview": "node \"node_modules/vite/bin/vite.js\" preview"
+"scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "tauri": "tauri",
+    "tauri-safe": "node tauri-runner.js"
   },
   "keywords": [],
   "author": "",
@@ -19,6 +21,7 @@
   },
   "devDependencies": {
     "@tailwindcss/vite": "^4.1.18",
+    "@tauri-apps/cli": "^2.9.6",
     "@types/react": "^19.2.9",
     "@types/react-dom": "^19.2.3",
     "@vitejs/plugin-react": "^5.1.2",
