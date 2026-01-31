@@ -475,11 +475,19 @@ export default function ProgressBoard() {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [visitorCount, setVisitorCount] = useState(0);
+  const [scrolled, setScrolled] = useState(false);
 
   useEffect(() => {
     loadTasks();
     loadVisitorCount();
     checkUserSession();
+
+    const handleScroll = () => {
+      setScrolled(window.scrollY > 100);
+    };
+
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
   const loadVisitorCount = async () => {
@@ -714,18 +722,49 @@ export default function ProgressBoard() {
         `}
       </style>
 
-      {/* Visitor Counter */}
-      <div className="fixed top-4 left-4 z-40 bg-gray-800 pixel-border px-4 py-2 rounded">
+      {/* Mobile Header - Slim and Transparent */}
+      <div 
+        className={`fixed top-0 left-0 right-0 z-40 md:hidden transition-all duration-500 ${
+          scrolled ? 'opacity-0 pointer-events-none' : 'opacity-100'
+        }`}
+      >
+        <div className="flex items-center justify-between px-3 py-2 bg-gradient-to-b from-purple-900/20 via-transparent to-transparent backdrop-blur-[2px]">
+          {/* Visitor Counter */}
+          <div className="bg-gray-800/60 backdrop-blur-sm px-2.5 py-1 rounded shadow-lg">
+            <div className="flex items-center gap-1.5">
+              <span className="text-gray-400 text-[10px] font-mono">VISITORS</span>
+              <span className="text-yellow-400 font-bold font-mono text-xs">{visitorCount}</span>
+            </div>
+          </div>
+
+          {/* Login Icon */}
+          <button
+            onClick={handleShowLoginFromIcon}
+            className={`text-white p-2 rounded-full transition-all shadow-lg hover:scale-110 backdrop-blur-sm ${
+              isLoggedIn 
+                ? 'bg-gradient-to-br from-green-500/70 via-emerald-500/70 to-teal-600/70' 
+                : 'bg-gradient-to-br from-purple-500/70 via-pink-500/70 to-red-500/70'
+            }`}
+            style={{ boxShadow: '0 2px 10px rgba(0, 0, 0, 0.3)' }}
+            title={isLoggedIn ? 'User Menu' : 'Login'}
+          >
+            {isLoggedIn ? <User className="w-4 h-4" /> : <LogIn className="w-4 h-4" />}
+          </button>
+        </div>
+      </div>
+
+      {/* Desktop Visitor Counter */}
+      <div className="hidden md:block fixed top-4 left-4 z-40 bg-gray-800 pixel-border px-4 py-2 rounded">
         <div className="flex items-center gap-2">
           <span className="text-gray-400 text-xs font-mono">VISITORS</span>
           <span className="text-yellow-400 font-bold font-mono">{visitorCount}</span>
         </div>
       </div>
 
-      {/* Login Icon - Top Right - Always Visible */}
+      {/* Desktop Login Icon - Top Right - Always Visible */}
       <button
         onClick={handleShowLoginFromIcon}
-        className={`fixed top-4 right-4 z-40 text-white p-3 rounded-full pixel-button transition-all shadow-lg hover:scale-110 ${
+        className={`hidden md:block fixed top-4 right-4 z-40 text-white p-3 rounded-full pixel-button transition-all shadow-lg hover:scale-110 ${
           isLoggedIn 
             ? 'bg-gradient-to-br from-green-500 via-emerald-500 to-teal-600 hover:from-green-600 hover:via-emerald-600 hover:to-teal-700' 
             : 'bg-gradient-to-br from-purple-500 via-pink-500 to-red-500 hover:from-purple-600 hover:via-pink-600 hover:to-red-600'
@@ -865,7 +904,7 @@ export default function ProgressBoard() {
         />
       )}
 
-      <div className="container mx-auto px-4 md:px-6 py-6 md:py-12 max-w-7xl">
+      <div className="container mx-auto px-4 md:px-6 py-6 md:py-12 max-w-7xl pt-16 md:pt-6">
         <div className="text-center mb-6 md:mb-12">
           <h1 className="text-4xl md:text-6xl font-black text-transparent bg-clip-text bg-gradient-to-r from-purple-400 via-pink-500 to-red-500 mb-2 md:mb-4">
             Achievement Board

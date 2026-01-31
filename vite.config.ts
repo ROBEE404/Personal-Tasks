@@ -10,7 +10,7 @@ export default defineConfig({
     tailwindcss(),
   ],
 
- clearScreen: false,
+  clearScreen: false,
   // 2. tauri expects a fixed port, fail if that port is not available
   server: {
     port: 1420,
